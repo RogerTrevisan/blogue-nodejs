@@ -3,6 +3,7 @@ const express = require('express')
 const handlebars = require("express-handlebars")
 const bodyParser = require("body-parser")
 const app = express()
+const admin = require('./routes/admin')
 //Configurações
     //Body parser
     app.use(bodyParser.urlencoded({extended: true}))
@@ -10,6 +11,8 @@ const app = express()
     //Handlebars
     app.engine('handlebars', handlebars({defaultLayout: 'main'}))
     app.set('view engine','handlebars');
+//Rotas
+app.use('/admin', admin)
 //Conexão express
 const PORTA = 8181
 app.listen(PORTA,() => {
