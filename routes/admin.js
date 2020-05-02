@@ -13,6 +13,23 @@ router.get('/categorias/add', (req,res) => {
     res.render('admin/addcategorias')
 })
 router.post('/categorias/nova',(req,res) => {
+    var erros = []
+    let name = req.body.name
+    let slug = req.body.slug
+    if (!name || typeof name == undefined || name == null) {
+        erros.push({texto: 'Nome inválido'})
+    }
+    if (!slug || typeof slug == undefined || slug == null || cas) {
+        erros.push({texto: 'Slug inválido'})
+    }
+    if (slug.length < 6) {
+        erros.push({
+            texto: 'Nome muito curto'
+        })
+    }
+    if (erros.length > 0 ) {
+        res.render('admin/addcategorias', {erros: erros})
+    }
     const novaCategoria = {
         nome: req.body.name,
         slug: req.body.slug
