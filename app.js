@@ -7,7 +7,7 @@ const admin = require('./routes/admin')
 const path = require('path')
 const mongoose = require('mongoose')
 const session = require('express-session')
-const flash = require('connection-flash')
+const flash = require('connect-flash')
 //Configurações
     //Sessões
     app.use(session({
