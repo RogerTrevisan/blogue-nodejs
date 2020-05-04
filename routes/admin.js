@@ -16,29 +16,43 @@ router.post('/categorias/nova',(req,res) => {
     var erros = []
     let name = req.body.name
     let slug = req.body.slug
+        
     if (!name || typeof name == undefined || name == null) {
         erros.push({texto: 'Nome inválido'})
     }
-    if (!slug || typeof slug == undefined || slug == null || cas) {
+
+    if (!slug || typeof slug == undefined || slug == null) {
         erros.push({texto: 'Slug inválido'})
     }
+
     if (slug.length < 6) {
         erros.push({
             texto: 'Nome muito curto'
         })
     }
+
+    if (/\s/g.test(slug) == true) {
+        erros.push({
+            texto: 'O slug não pode conter espaço vazio.'
+        })
+    }
+
+    
     if (erros.length > 0 ) {
         res.render('admin/addcategorias', {erros: erros})
+    }else{
+        const novaCategoria = {
+            nome: req.body.name,
+            slug: req.body.slug
+        }
+        new Categoria(novaCategoria).save().then(() => {
+            req.flash('success_msg','Categoria criada com sucesso!')
+            res.redirect('/admin/categorias')
+        }).catch((err) => {
+            req.flash('error_msg','Erro ao criar a categoria.')
+            console.log('Erro ao adicionar nova tabela.')
+        })
     }
-    const novaCategoria = {
-        nome: req.body.name,
-        slug: req.body.slug
-    }
-    new Categoria(novaCategoria).save().then(() => {
-        console.log('Nova categoria adicionada com sucesso.')
-    }).catch((err) => {
-        console.log('Erro ao adicionar nova tabela.')
-    })
 })
 router.get('/posts',(req,res) => {
     res.send('Página posts')    
