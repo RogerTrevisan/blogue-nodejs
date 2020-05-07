@@ -25,15 +25,21 @@ router.post('/categorias/nova',(req,res) => {
         erros.push({texto: 'Slug inválido'})
     }
 
-    if (slug.length < 6) {
+    if (slug.length < 3) {
         erros.push({
-            texto: 'Nome muito curto'
+            texto: 'O nome do Slug é muito curto, nescessário ter ao menos 3 digitos'
         })
     }
 
     if (/\s/g.test(slug) == true) {
         erros.push({
             texto: 'O slug não pode conter espaço vazio.'
+        })
+    }
+
+    if (/[aA-Z]\s/g.test(slug) == true) {
+        erros.push({
+            texto: 'O slug não pode conter letras maiúsculas.'
         })
     }
 
