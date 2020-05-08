@@ -27,7 +27,7 @@ router.post('/categorias/nova',(req,res) => {
 
     if (slug.length < 3) {
         erros.push({
-            texto: 'O nome do Slug é muito curto, nescessário ter ao menos 3 digitos'
+            texto: 'O nome do Slug é muito curto, nescessário ter ao menos 3 digitos.'
         })
     }
 
@@ -36,14 +36,25 @@ router.post('/categorias/nova',(req,res) => {
             texto: 'O slug não pode conter espaço vazio.'
         })
     }
-
-    if (/[aA-Z]\s/g.test(slug) == true) {
+    
+    if (/[A-Z]/g.test(slug) == true) {
         erros.push({
             texto: 'O slug não pode conter letras maiúsculas.'
         })
     }
-
     
+    if (/[0-9]/g.test(slug) == true) {
+        erros.push({
+            texto: 'O slug não pode conter numeros.'
+        })
+    }
+
+    if (/[-_=+§~^´`:;/?.,><)(*&¬¨$#@!"'¹²³£¢|]/g.test(slug) == true) {
+        erros.push({
+            texto: 'O slug não pode conter caracteres especiais.'
+        })
+    }
+
     if (erros.length > 0 ) {
         res.render('admin/addcategorias', {erros: erros})
     }else{
