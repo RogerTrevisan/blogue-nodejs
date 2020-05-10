@@ -57,13 +57,13 @@ router.post('/categorias/nova',(req,res) => {
             texto: 'O slug não pode conter numeros.'
         })
     }
-
+    
     if (/[-_=+§~^´`:;/?.,><)(*&¬¨$#@!"'¹²³£¢|]/g.test(slug) == true) {
         erros.push({
             texto: 'O slug não pode conter caracteres especiais.'
         })
     }
-
+    
     if (erros.length > 0 ) {
         res.render('admin/addcategorias', {erros: erros})
     }else{
@@ -80,7 +80,58 @@ router.post('/categorias/nova',(req,res) => {
         })
     }
 })
-router.get('/posts',(req,res) => {
-    res.send('Página posts')    
+
+router.get('/categorias/edit/:id', (req,res) => {
+
+    Categoria.findOne({_id:req.params.id}).lean().then((categoria) => {
+    
+        res.render('admin/editcategorias', {categoria:categoria})
+     }).catch((err) =>  {
+
+         req.flash('error_msg', 'Categotia não existe')
+         res.redirect('/admin/categorias')
+
+     })
 })
+
+router.post('/categorias/edit', (req,res) => {
+    
+    Categoria.findOne({_id:req.body.id}).then((categoria) => {
+        
+        categoria.nome = req.body.name
+        categoria.slug = req.body.slug
+        
+        categoria.save().then(() => {
+            req.flash('success_msg','Categoria editada com sucesso')
+            res.redirect('/admin/categorias')
+        }).catch((err) => {
+            req.flash('error_msg','Erro ao salvar edição da categoria')
+            res.redirect('/admin/editcategorias')            
+        })
+
+    }).catch((err) => {
+        req.flash('error_msg', 'Erro interno ao alterar a categoria.')
+        res.redirect('/admin/categorias')
+
+    })
+    
+})
+
+router.post('/categorias/deletar',(req,res) => {
+    Categoria.remove({_id: req.body.id}).then(() => {
+        req.flash('success_msg','Categoria deletada com sucesso.')
+        res.redirect('/admin/categorias')
+    }).catch((err) => {
+        req.flash('error_msg','Erro ao deletar categoria.')
+        res.redirect('/admin/categorias')
+
+    })
+})
+
+router.get('/posts',(req,res) => {
+
+    res.send('Página posts')    
+
+})
+
 module.exports = router
