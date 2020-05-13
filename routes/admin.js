@@ -84,20 +84,60 @@ router.post('/categorias/nova',(req,res) => {
 router.get('/categorias/edit/:id', (req,res) => {
 
     Categoria.findOne({_id:req.params.id}).lean().then((categoria) => {
-    
         res.render('admin/editcategorias', {categoria:categoria})
      }).catch((err) =>  {
-
          req.flash('error_msg', 'Categotia não existe')
          res.redirect('/admin/categorias')
-
      })
 })
 
-router.post('/categorias/edit', (req,res) => {
-    
-    Categoria.findOne({_id:req.body.id}).then((categoria) => {
+router.post('/categorias/edit', (req,res) => {    
+    Categoria.findOne({_id:req.body.id}).lean().then((categoria) => {
+        var erros = []
         
+        
+    if (!req.body.name || typeof req.body.name == undefined || req.body.name == null) {
+        erros.push({texto: 'Nome inválido'})
+    }
+    
+    if (!req.body.slug || typeof req.body.slug == undefined || req.body.slug == null) {
+        erros.push({texto: 'Slug inválido'})
+    }
+
+    if (req.body.slug.length < 3) {
+        erros.push({
+            texto: 'O nome do Slug é muito curto, nescessário ter ao menos 3 digitos.'
+        })
+    }
+
+    if (/\s/g.test(req.body.slug) == true) {
+        erros.push({
+            texto: 'O slug não pode conter espaço vazio.'
+        })
+    }
+    
+    if (/[A-Z]/g.test(req.body.slug) == true) {
+        erros.push({
+            texto: 'O slug não pode conter letras maiúsculas.'
+        })
+    }
+    
+    if (/[0-9]/g.test(req.body.slug) == true) {
+        erros.push({
+            texto: 'O slug não pode conter numeros.'
+        })
+    }
+    
+    if (/[-_=+§~^´`:;/?.,><)(*&¬¨$#@!"'¹²³£¢|]/g.test(req.body.slug) == true) {
+        erros.push({
+            texto: 'O slug não pode conter caracteres especiais.'
+        })
+    }
+    
+    if (erros.length > 0 ) {
+        res.render('admin/editcategorias', {categoria:categoria, erros: erros})
+    }else{
+        Categoria.findOne({_id:req.body.id}).then((categoria) => {
         categoria.nome = req.body.name
         categoria.slug = req.body.slug
         
@@ -108,17 +148,19 @@ router.post('/categorias/edit', (req,res) => {
             req.flash('error_msg','Erro ao salvar edição da categoria')
             res.redirect('/admin/editcategorias')            
         })
+    }
+        )}
 
     }).catch((err) => {
         req.flash('error_msg', 'Erro interno ao alterar a categoria.')
         res.redirect('/admin/categorias')
 
     })
-    
+
 })
 
 router.post('/categorias/deletar',(req,res) => {
-    Categoria.remove({_id: req.body.id}).then(() => {
+    Categoria.deleteOne({_id: req.body.id}).then(() => {
         req.flash('success_msg','Categoria deletada com sucesso.')
         res.redirect('/admin/categorias')
     }).catch((err) => {
