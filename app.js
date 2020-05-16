@@ -30,7 +30,10 @@ const flash = require('connect-flash')
     app.set('view engine','handlebars');
     //Mongoose
     mongoose.Promise = global.Promise
-    mongoose.connect('mongodb://localhost/blogapp').then(() => {
+    mongoose.connect(('mongodb://localhost/blogapp'),{
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    }).then(() => {
         console.log('conectado ao mongo...')
     }).catch((err) => {
         console.log(`Erro ao conectar: ${err}`)
@@ -40,7 +43,7 @@ const flash = require('connect-flash')
 //Rotas
 app.use('/admin', admin)
 //Conexão express
-const PORTA = 8181
-app.listen(PORTA,() => {
-    console.log(`Servidor rodando na porta: ${PORTA}`)
+const porta = 8181
+app.listen(porta,() => {
+    console.log(`Servidor rodando na porta: ${porta}`)
     })
