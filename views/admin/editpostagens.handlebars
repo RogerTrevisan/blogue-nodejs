@@ -17,10 +17,13 @@
                 <textarea name="conteudo" cols="30" rows="10" placeholder="Conteúdo" class="form-control">{{postagem.conteudo}}</textarea>
             <label for="categoria">Categoria: </label>
                 <select class="custom-select" name="categoria">
-                    {{#each categorias}}
-                        <option value="{{_id}}">{{nome}}</option>
+                    {{#each selectFilter}}
+                        {{#if selected}}                        
+                            <option selected value="{{_id}}">{{nome}}</option>                            
                         {{else}}
-                        <option value="0">Não há categoria(s) registrada(s)</option>
+                            <option value="{{_id}}">{{nome}}</option>
+                        {{/if}}                            
+              
                     {{/each}}
                 </select>
             <button type="submit" class="btn btn-success mt-3">Editar.</button>

@@ -38,10 +38,16 @@ let validaPostagem = function validarPostagem(dados) {
             texto: 'O slug não pode conter caracteres especiais.'
         })
     }
-    
-    if (!dados.descricao || typeof dados.descricao == undefined || dados.slug == null ) {
+
+    if (!dados.descricao || typeof dados.descricao == undefined || dados.descricao == null ) {
         erros.push({
             texto: 'Preencha o campo de descrição'
+        })
+    }
+
+    if (!dados.conteudo || typeof dados.conteudo == undefined || dados.conteudo == null ) {
+        erros.push({
+            texto: 'Preencha o campo de conteúdo'
         })
     }
 

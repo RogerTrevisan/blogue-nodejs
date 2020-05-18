@@ -6,14 +6,14 @@ require('../models/Postagem')
 const Categoria = mongoose.model('categorias')
 const Postagem = mongoose.model('postagens')
 const validaCategoria = require('../control/validaCategoria.js')
-const validaPostagem = require('../control/validaCategoria.js')
+const validaPostagem = require('../control/validaPostagem')
 
 router.get('/',(req,res) => {
     res.render('admin/index')
 })
 
 router.get('/categorias',(req,res) => {
-    Categoria.find().sort({date:'desc'}).lean().then((categorias) => {
+    Categoria.find().lean().sort({date:'desc'}).then((categorias) => {
         res.render('admin/categorias', {categorias:categorias})
     }).catch((err) => { 
         req.flash('error_msg','Erro ao listar a(s) categoria(s).'),
@@ -98,7 +98,7 @@ router.post('/categorias/edit', (req,res) => {
     })
     
     router.get('/postagens',(req,res) => {
-        Postagem.find().populate('categoria').sort({date:'desc'}).lean().then((postagens)=>{
+        Postagem.find().populate('categoria').lean().sort({date:'desc'}).then((postagens)=>{
         res.render('admin/postagens',{postagens:postagens})
     }).catch((err)=>{
         req.flash('error_msg','Erro ao listar a(s) postagens(s)')
@@ -118,14 +118,16 @@ router.get('/postagens/add',(req,res)=>{
 router.post('/postagens/nova',(req,res)=>{
   var erros = validaPostagem(req.body)  
     if (erros.length > 0 ) {
-        res.render('admin/addpostagem', {erros: erros})
+        Categoria.find().lean().then((categorias)=>{
+            res.render('admin/addpostagem', {erros: erros, categorias: categorias})
+        })
     }else{
         const novaPostagem = {
             titulo: req.body.titulo,
             slug: req.body.slug,
             descricao: req.body.descricao,
             conteudo: req.body.conteudo,
-            categoria: req.body.categoria
+            categoria: req.body.categoria,
         }
         new Postagem(novaPostagem).save().then(()=>{
             req.flash('success_msg','Postagem criada com sucesso.')
@@ -138,7 +140,23 @@ router.get('/postagens/edit/:id',(req,res)=>{
     
     Postagem.findOne({_id:req.params.id}).lean().then((postagem)=>{
         Categoria.find().lean().then((categorias)=>{
-            res.render('admin/editpostagens', {categorias:categorias,postagem:postagem})
+            let selectFilter = []
+            categorias.forEach(cat => {
+                if (cat._id.toString() !== postagem.categoria.toString()) {
+                    selectFilter.push({
+                        _id: cat._id,
+                        nome: cat.nome,
+                        selected: false
+                    })
+                } else {
+                    selectFilter.push({
+                        _id: cat._id,
+                        nome: cat.nome,
+                        selected: true
+                    })
+                }
+            })
+            res.render('admin/editpostagens', {categorias:categorias,postagem:postagem,selectFilter:selectFilter})
         }).catch((err)=>{
             req.flash('error_msg, Erro ao listar as categorias')
             res.redirect('/admin/postagens')
@@ -150,19 +168,31 @@ router.get('/postagens/edit/:id',(req,res)=>{
 })
 
 router.post('/postagens/edit',(req,res)=>{
-    Postagem.findOne({_id:req.body.id}).then((postagem)=>{
-        postagem.titulo=req.body.titulo
-        postagem.slug=req.body.slug
-        postagem.descricao=req.body.descricao
-        postagem.conteudo=req.body.conteudo
-        postagem.categoria=req.body.categoria
-
-        postagem.save().then(()=>{
-          req.flash('success_msg', 'Postagem editada com sucesso!')
-          res.redirect('/admin/postagens')
-        }).catch((err)=>{
-          req.flash('error_msg', 'Erro interno.')
-          res.redirect('/admin/postagens')
+    Postagem.findOne({_id:req.body.id}).lean().then((postagem)=>{
+        Categoria.find().lean().then((categorias)=>{
+            var erros = validaPostagem(req.body)    
+            
+            if(erros.length > 0 ) {
+                res.render('admin/editpostagens', {categorias:categorias,postagem:postagem,erros:erros})
+            } else{
+                Postagem.findOne({_id:req.body.id}).then((postagem)=>{
+                   
+                    postagem.titulo=req.body.titulo
+                    postagem.slug=req.body.slug
+                    postagem.descricao=req.body.descricao
+                    postagem.conteudo=req.body.conteudo
+                    postagem.categoria=req.body.categoria
+                    postagem.date=Date.now()
+                    
+                    postagem.save().then(()=>{
+                        req.flash('success_msg', 'Postagem editada com sucesso!')
+                        res.redirect('/admin/postagens')
+                    }).catch((err)=>{
+                    req.flash('error_msg', `Erro interno ${err}`)
+                    res.redirect('/admin/postagens')
+                    })
+                })
+            }
         })
     })
 })
