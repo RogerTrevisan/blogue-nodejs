@@ -32,7 +32,7 @@ const flash = require('connect-flash')
         }
     })
     app.engine('handlebars', hbs.engine)
-    app.set('view engine','handlebars');
+    app.set('view engine','handlebars')
     //Mongoose
     mongoose.Promise = global.Promise
     mongoose.connect(('mongodb://localhost/blogapp'),{
@@ -46,6 +46,12 @@ const flash = require('connect-flash')
     //Public
     app.use(express.static(path.join(__dirname,'public')))
 //Rotas
+app.get('/', (req,res)=>{
+    res.send('Rota principal')
+})
+app.get('/posts',(req, res)=>{
+    res.send('Postagens')
+})
 app.use('/admin', admin)
 //Conexão express
 const porta = 8181
