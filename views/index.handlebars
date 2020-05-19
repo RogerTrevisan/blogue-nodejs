@@ -1,0 +1,21 @@
+<div class="jumbotron">
+  <h1 class="display-4">Blog node.js</h1>
+  <p class="lead">Este é um blog criado com node.js, nele além do node.js faço o uso de algumas tecnologias como handlebars, mongodb, entre outros </p>
+  <hr class="my-4">
+  <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+  <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+</div>
+<hr>
+<h2>Postagens recentes:</h2>
+{{#each postagens}}
+    <div class="card mt-4">
+        <div class="card card-body">
+            <h3>{{titulo}}</h3>
+            <p>{{descricao}}</p>
+            <hr>
+            <small>Categoria: {{categoria.nome}}</small>
+            <small>Data da ultima atualização: {{date}}</small>
+        </div>
+    </div>
+    {{else}}
+{{/each}}
