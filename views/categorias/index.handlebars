@@ -1,0 +1,8 @@
+<ul class="list-group">
+    <li class="list-group-item">Categoria</li>
+    {{#each categorias}}
+        <a href="categoria/{{slug}}"><li class="list-group-item list-group-item-light">{{nome}}</li></a>
+        {{else}}
+    {{/each}}
+</ul>
+<a href="/"><button class="btn btn-success mt-3">Home</button></a>

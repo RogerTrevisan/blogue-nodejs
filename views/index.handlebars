@@ -2,19 +2,20 @@
   <h1 class="display-4">Blog node.js</h1>
   <p class="lead">Este é um blog criado com node.js, nele além do node.js faço o uso de algumas tecnologias como handlebars, mongodb, entre outros </p>
   <hr class="my-4">
-  <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
-  <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+  <p>Cadastre-se para saber mais.</p>
+  <a class="btn btn-primary btn-lg" href="#" role="button">Cadastrar</a>
 </div>
 <hr>
 <h2>Postagens recentes:</h2>
 {{#each postagens}}
     <div class="card mt-4">
         <div class="card card-body">
-            <h3>{{titulo}}</h3>
+            <a href="/postagem/{{slug}}"><h3>{{titulo}}</h3></a>
             <p>{{descricao}}</p>
             <hr>
-            <small>Categoria: {{categoria.nome}}</small>
+            <small>Categoria: <a href="/categoria/{{categoria.slug}}"><button class="btn btn-outline-info">{{categoria.nome}}</button></a></small>
             <small>Data da ultima atualização: {{date}}</small>
+            <a href="/postagem/{{slug}}"><button class="btn btn-success mt-3">Leia mais</button></a>
         </div>
     </div>
     {{else}}

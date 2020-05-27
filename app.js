@@ -8,7 +8,9 @@ const path = require('path')
 const mongoose = require('mongoose')
 const session = require('express-session')
 const flash = require('connect-flash')
+require('./models/Categoria')
 const Categoria = mongoose.model('categorias')
+require('./models/Postagem')
 const Postagem = mongoose.model('postagens')
 
 //Configurações
@@ -49,23 +51,66 @@ const Postagem = mongoose.model('postagens')
     //Public
     app.use(express.static(path.join(__dirname,'public')))
 //Rotas
-app.get('/', (req,res)=>{
-    Postagem.find().populate('categoria').lean().sort({date:'desc'}).then((postagens)=>{
-        res.render('index', {postagens:postagens})
-    }).catch((err)=>{
-        req.flash('error_msg', 'Houve um erro interno')
-        res.redirect('/404')
+    //Home
+    app.get('/', (req,res)=>{
+        Postagem.find().populate('categoria').lean().sort({date:'desc'}).then((postagens)=>{
+            res.render('index', {postagens:postagens})
+        }).catch((err)=>{
+            req.flash('error_msg', 'Houve um erro interno')
+            res.redirect('/404')
+        })
     })
-})
-app.get('/404',(req,res)=>{
-    res.send('Erro 404!')
-})
-app.get('/posts',(req, res)=>{
-    res.render('posts')
-})
-app.use('/admin', admin)
+    //erro 404
+    app.get('/404',(req,res)=>{
+        res.send('Erro 404!')
+    })
+    //Postagens
+    app.get('/posts',(req, res)=>{
+        res.render('posts')
+    })
+    //Postagem pelo slug
+    app.get('/postagem/:slug', (req,res)=>{
+        Postagem.findOne({slug: req.params.slug}).lean().then((postagem)=>{
+            if (postagem) {
+                res.render('postagem/index',{postagem:postagem})                
+            } else {
+                req.flash('error-msg', 'Esta postagem não existe.')
+                res.redirect('/')
+            }
+        }).catch((err)=>{
+            req.flash('error-msg', 'Houve um erro interno.')
+            res.redirect('/')
+        })
+    })
+    //Categorias
+    app.get('/categorias', (req,res)=>{
+        Categoria.find().lean().sort({date: 'desc'}).then((categorias)=>{
+            res.render('categorias/index',{categorias:categorias})
+        }).catch((err)=>{
+            req.flash('error_msg', 'Erro ao listar as categoria')
+            res.redirect('/')
+        })
+    })
+    //Categoria pelo slug
+    app.get('/categoria/:slug', (req,res)=>{
+        Categoria.findOne({slug:req.params.slug}).lean().then((categoria)=>{
+            if (categoria) {
+                Postagem.find({categoria: categoria._id}).populate('categoria').lean().then((postagem)=>{
+                    res.render('categorias/postagens', {postagem:postagem, categoria:categoria})
+                })
+            } else {
+                req.flash('error_msg', 'Categoria não esxiste.')
+                res.redirect('categorias/index')
+            }
+        }).catch((err)=>{
+            req.flash('error_msg', 'Houve um erro interno ao carregar a página desta categoria.')
+            res.redirect('/')
+        })
+    })
+    //Rotas admin
+    app.use('/admin', admin)
 //Conexão express
-const porta = 8181
-app.listen(porta,() => {
-    console.log(`Servidor rodando na porta: ${porta}`)
-    })
+    const porta = 8181
+    app.listen(porta,() => {
+        console.log(`Servidor rodando na porta: ${porta}`)
+        })
