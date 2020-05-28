@@ -12,6 +12,7 @@ require('./models/Categoria')
 const Categoria = mongoose.model('categorias')
 require('./models/Postagem')
 const Postagem = mongoose.model('postagens')
+const usuarios = require('./routes/user')
 
 //Configurações
     //Sessões
@@ -107,8 +108,9 @@ const Postagem = mongoose.model('postagens')
             res.redirect('/')
         })
     })
-    //Rotas admin
+    //Rotas
     app.use('/admin', admin)
+    app.use('/user', usuarios)
 //Conexão express
     const porta = 8181
     app.listen(porta,() => {
