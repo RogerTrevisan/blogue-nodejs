@@ -1,12 +1,16 @@
+{{#each erros}}
+    <div class="alert alert-danger">{{texto}}</div>
+    {{else}}
+{{/each}}
 <h4>Cadastro:</h4>
-<form action="" method="post">
+<form action="/user/cadastro" method="post">
     <label for="name">Nome: </label>
-        <input type="text" name="name" placeholder="Nome do usuário." class="form-control" required>
+        <input type="text" name="name" placeholder="Nome do usuário" class="form-control" required>
     <label for="email">E-mail: </label>
-        <input type="email" name="email" placeholder="user@mail.com ." class="form-control">
+        <input type="email" name="email" placeholder="user@mail.com" class="form-control" required>
     <label for="passwoed">Senha: </label>
-        <input type="password" name="password" placeholder="Senha." class="form-control">
+        <input type="password" name="password" placeholder="Senha" class="form-control" required>
     <label for="confirmPassword">Confirmar senha:</label>
-        <input type="password" name="confirm-password" placeholder='Confirmar senha.' class="form-control">
+        <input type="password" name="confirmPassword" placeholder='Confirmar senha' class="form-control" required>
     <button class="btn btn-success mt-3" type="submit">Cadastrar</button>
 </form>
