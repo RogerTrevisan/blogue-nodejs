@@ -16,6 +16,7 @@ const usuarios = require('./routes/user')
 const passport = require('passport')
 require('./config/auth')(passport)
 
+
 //Configurações
     //Sessões
     app.use(session({
@@ -31,6 +32,7 @@ require('./config/auth')(passport)
         res.locals.success_msg = req.flash('success_msg')
         res.locals.error_msg = req.flash('error_msg')
         res.locals.error_log = req.flash('error')
+        res.locals.user = req.user || null
         next()
     })
     //Body parser
