@@ -15,9 +15,9 @@ module.exports = function(passport) {
             bcrypt.compare(password, usuario.password, (erro, check)=>{
 
                 if (check) {
-                    return done(null.usuario)
+                    return done(null, usuario)
                 } else {
-                    return done(null.false, {message: 'Senha não existe'})
+                    return done(null, false, {message: 'Senha inválida'})
                 }
             })
         }).catch((err)=>{
@@ -32,7 +32,7 @@ module.exports = function(passport) {
 
     passport.deserializeUser((_id,done)=>{
          Usuario.findById(_id,(err, usuario)=>{
-            done(err,user)
+            done(err,usuario)
          })
     })
 }
