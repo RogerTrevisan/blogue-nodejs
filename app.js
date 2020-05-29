@@ -50,7 +50,8 @@ require('./config/auth')(passport)
     mongoose.Promise = global.Promise
     mongoose.connect(('mongodb://localhost/blogapp'),{
         useNewUrlParser: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
+        useCreateIndex: true
     }).then(() => {
         console.log('conectado ao mongo...')
     }).catch((err) => {
